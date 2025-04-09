@@ -33,6 +33,7 @@ def get_todos(first_n: int|None = None) -> list[dict[str, Any]]:
     else:
         return all_todos
 
+
 # CREATE a new Todo - POST
 # {
 #     "todo_name": "New Todo",
@@ -52,6 +53,7 @@ def create_todo(todo: dict) -> dict[str, Any]:
 
     return new_todo
 
+
 # UPDATE a todo = PUT
 @api.put('/todos/{todo_id}')
 def update_todo(todo_id: int, updated_todo: dict) -> dict[str, Any] | Literal['Error, not found']:# -> dict[str, Any] | Literal['Error, not found']:
@@ -63,6 +65,7 @@ def update_todo(todo_id: int, updated_todo: dict) -> dict[str, Any] | Literal['E
     return "Error, not found"
 
 
+
 #  DELETE a todo - DELETE
 @api.delete('/todos/{todo_id}')
 def delete_todo(todo_id: int)-> dict[str, Any] | Literal['Error, not found']:
@@ -71,6 +74,7 @@ def delete_todo(todo_id: int)-> dict[str, Any] | Literal['Error, not found']:
             deleted_todo:dict[str,any] = all_todos.pop(index)
             return deleted_todo
     return "Error, not found"
+
 
 
 # def main():
