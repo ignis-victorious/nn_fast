@@ -1,7 +1,7 @@
 #  _______________
 #  Import LIBRARIES
 from typing import Literal
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 # from pydantic import BaseModel, Field
 # from enum import Enum
@@ -17,7 +17,7 @@ api = FastAPI()
 # GET, POST, PUT, DELETE
 @api.get("/")
 def index() -> dict[str, str]:
-    return {"message": "Hello World"}
+    return {"message": "This is the root of this web app!"}
 
 
 #  Displays the give id todo - GET
@@ -29,14 +29,7 @@ def get_todo(todo_id: int) -> Todo | Literal["Error, not found"]:
             print(todo)
             return todo
 
-    return "Error, not found"
-
-
-# @api.get('/todos/{todo_id}')
-# def get_todo(todo_id: int) -> dict[str, dict[str, Any]] | None:
-#     for todo in all_todos:
-#         if todo['todo_id'] == todo_id:
-#             return {'result': todo}
+    raise HTTPException(status_code=404, detail="Todo, not found")
 
 
 #  Prints all_todo if none passed else print the first x - GET
@@ -46,14 +39,6 @@ def get_todos(first_n: int | None = None) -> list[Todo]:
         return all_todos[:first_n]
     else:
         return all_todos
-
-
-# @api.get("/todos")
-# def get_todos(first_n: int | None = None) -> list[dict[str, Any]]:
-#     if first_n:
-#         return all_todos[:first_n]
-#     else:
-#         return all_todos
 
 
 # # CREATE a new Todo - POST
@@ -75,53 +60,21 @@ def create_todo(todo_create: TodoCreate) -> Todo:
     return new_todo
 
 
-# # {
-# #     "todo_name": "New Todo",
-# #     "todo_description": "New Todo Description"
-# #
-# @api.post("/todos")
-# def create_todo(todo: dict) -> dict[str, Any]:
-#     new_todo_id: int = max([todo["todo_id"] for todo in all_todos]) + 1
-
-#     new_todo: dict[str, Any] = {
-#         "todo_id": new_todo_id,
-#         "todo_name": todo["todo_name"],
-#         "todo_description": todo["todo_description"],
-#     }
-
-#     all_todos.append(new_todo)
-
-#     return new_todo
-
-
 # # UPDATE a todo = PUT
 @api.put("/todos/{todo_id}", response_model=Todo)
 def update_todo(
     todo_id: int, updated_todo: TodoUpdate
 ) -> Todo | Literal["Error, not found"]:
-    print("___________ entered the function ____________")
     for todo in all_todos:
-        print(f"_______ todo: {todo}")
         if todo.todo_id == todo_id:
-            todo.todo_name = updated_todo.todo_name
-            todo.todo_description = updated_todo.todo_description
-            todo.priority = updated_todo.priority
+            if updated_todo.todo_name is not None:
+                todo.todo_name = updated_todo.todo_name
+            if updated_todo.todo_description is not None:
+                todo.todo_description = updated_todo.todo_description
+            if updated_todo.priority is not None:
+                todo.priority = updated_todo.priority
             return todo
-    return "Error, not found"
-
-
-# @api.put("/todos/{todo_id}")
-# def update_todo(
-#     todo_id: int, updated_todo: dict
-# ) -> (
-#     dict[str, Any] | Literal["Error, not found"]
-# ):  # -> dict[str, Any] | Literal['Error, not found']:
-#     for todo in all_todos:
-#         if todo["todo_id"] == todo_id:
-#             todo["todo_name"] = updated_todo["todo_name"]
-#             todo["todo_description"] = updated_todo["todo_description"]
-#             return todo
-#     return "Error, not found"
+    raise HTTPException(status_code=404, detail="Todo, not found")
 
 
 # #  DELETE a todo - DELETE
@@ -131,21 +84,4 @@ def delete_todo(todo_id: int) -> Todo | Literal["Error, not found"]:
         if todo.todo_id == todo_id:
             deleted_todo: Todo = all_todos.pop(index)
             return deleted_todo
-    return "Error, not found"
-
-
-# @api.delete("/todos/{todo_id}")
-# def delete_todo(todo_id: int) -> dict[str, Any] | Literal["Error, not found"]:
-#     for index, todo in enumerate(all_todos):
-#         if todo["todo_id"] == todo_id:
-#             deleted_todo: dict[str, any] = all_todos.pop(index)
-#             return deleted_todo
-#     return "Error, not found"
-
-
-# # def main():
-# #     print("Hello from nn-fast!")
-
-
-# # if __name__ == "__main__":
-# #     main()
+    raise HTTPException(status_code=404, detail="Todo, not found")
